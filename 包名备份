@@ -1,0 +1,7 @@
+pip install Scrapy
+pip install mysqlclient
+pip install SQLAlchemy
+pip install pypiwin32
+pip install requests
+pip install selenium
+# 及配套webdriver安装

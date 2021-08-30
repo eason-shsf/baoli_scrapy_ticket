@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/scrapy_baj.iml" filepath="$PROJECT_DIR$/.idea/scrapy_baj.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../scrapy_demo/.idea/scrapy_demo.iml" filepath="$PROJECT_DIR$/../scrapy_demo/.idea/scrapy_demo.iml" />
+    </modules>
+  </component>
+</project>

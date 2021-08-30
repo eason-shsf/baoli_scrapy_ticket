@@ -1,0 +1,82 @@
+from sqlalchemy import create_engine, Column, Table, ForeignKey
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy import (
+    Integer, SmallInteger, String, Date, DateTime, Float, Boolean, Text, LargeBinary)
+
+from scrapy.utils.project import get_project_settings
+
+DeclarativeBase = declarative_base()
+
+def db_connect():
+    """
+    Performs database connection using database settings from settings.py.
+    Returns sqlalchemy engine instance
+    """
+    return create_engine(get_project_settings().get("CONNECTION_STRING"))
+
+def create_table(engine):
+    DeclarativeBase.metadata.create_all(engine)
+
+class GanjiDB(DeclarativeBase):
+    __tablename__ = "ganji_baj"
+
+    id = Column(Integer, primary_key=True)
+    title = Column('title', Text())
+    address = Column('address', String(100))
+    phone = Column('phone', String(100))
+    sourceId = Column('source_id', Integer())
+
+class ZhuangyiDB(DeclarativeBase):
+    __tablename__ = "zhuangyi_baj"
+
+    id = Column(Integer, primary_key=True)
+    name = Column('name', String(100))
+    style = Column('style', String(100))
+    space = Column('space', String(100))
+    city = Column('city', String(100))
+    phone = Column('phone', String(100))
+    sourceId = Column('source_id', Integer())
+
+class ZseztDB(DeclarativeBase):
+    __tablename__ = "zsezt_baj"
+
+    id = Column(Integer, primary_key=True)
+    name = Column('name', String(100))
+    talent = Column('talent', String(100))
+    address = Column('address', String(100))
+    phone = Column('phone', String(100))
+    sourceId = Column('source_id', Integer())
+
+class ChinaDrDB(DeclarativeBase):
+    __tablename__ = "chinadr_baj"
+
+    id = Column(Integer, primary_key=True)
+    name = Column('name', String(100))
+    type = Column('type', String(100))
+    talent = Column('talent', String(100))
+    qualify = Column('qualify', String(10000))
+    introduction = Column('introduction', Text())
+    phone = Column('phone', String(100))
+    sourceId = Column('source_id', Integer())
+
+class WubaDB(DeclarativeBase):
+    __tablename__ = "wuba_baj"
+
+    id = Column(Integer, primary_key=True)
+    name = Column('name', String(100))
+    type = Column('type', String(100))
+    serviceArea = Column('service_area', String(100))
+    address = Column('address', String(100))
+    phone = Column('phone', String(100))
+    sourceId = Column('source_id', Integer())
+
+class BaixingDB(DeclarativeBase):
+    __tablename__ = "baixing_baj"
+
+    id = Column(Integer, primary_key=True)
+    name = Column('name', String(100))
+    serviceContent = Column('service_content', Text())
+    serviceRange = Column('service_range', Text())
+    address = Column('address', String(100))
+    phone = Column('phone', String(100))
+    sourceId = Column('source_id', Integer())

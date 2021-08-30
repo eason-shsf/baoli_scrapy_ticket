@@ -1,0 +1,85 @@
+# -*- coding: utf-8 -*-
+import scrapy
+import logging
+
+
+class Baj58HtmlSpider(scrapy.Spider):
+    name = 'baj_58_html'
+    siteType = 5  # 表示类型58同城
+    custom_settings = {
+      'DOWNLOADER_MIDDLEWARES': {
+        'scrapy.downloadermiddlewares.retry.RetryMiddleware': 10,
+        'scrapy_baj.middlewares.ScrapyBajDownloaderMiddleware': 543,
+      },
+      'ROBOTSTXT_OBEY': False,
+      # 'DOWNLOAD_TIMEOUT': 30,
+      'DOWNLOAD_DELAY': 20
+    }
+    allowed_domains = ['sh.58.com']
+    # start_urls = ['https://sh.58.com/jiazhuang/pn3/?key=%E5%AE%B6%E5%BA%AD%E8%A3%85%E4%BF%AE&final=1&classpolicy=huangyezonghe_B&PGTID=0d300261-0000-2c67-558b-d311eb43ae38&ClickID=5']
+    start_urls = []
+
+    def __init__(self):
+        urls = []
+        # urls.append('https://sh.58.com/jiazhuang/pn' + str(60) + '/?key=%E5%AE%B6%E5%BA%AD%E8%A3%85%E4%BF%AE&final=1&classpolicy=huangyezonghe_B&PGTID=0d300261-0000-2c67-558b-d311eb43ae38&ClickID=5')
+        # urls.append('https://sh.58.com/jiazhuang/pn' + str(61) + '/?key=%E5%AE%B6%E5%BA%AD%E8%A3%85%E4%BF%AE&final=1&classpolicy=huangyezonghe_B&PGTID=0d300261-0000-2c67-558b-d311eb43ae38&ClickID=5')
+        # urls.append('https://sh.58.com/jiazhuang/pn' + str(64) + '/?key=%E5%AE%B6%E5%BA%AD%E8%A3%85%E4%BF%AE&final=1&classpolicy=huangyezonghe_B&PGTID=0d300261-0000-2c67-558b-d311eb43ae38&ClickID=5')
+        for i in range(68, 70):
+            urls.append('https://sh.58.com/jiazhuang/pn' + str(i) + '/?key=%E5%AE%B6%E5%BA%AD%E8%A3%85%E4%BF%AE&final=1&classpolicy=huangyezonghe_B&PGTID=0d300261-0000-2c67-558b-d311eb43ae38&ClickID=5')
+        self.start_urls = urls
+
+    def parse(self, response):
+        if('sh.58.com/jiazhuang/pn' in response.url):
+            listSelector = response.css('tr:not(.none) a.t.ac_linkurl')
+            if(len(listSelector) == 0):
+                logging.error('没有爬到网页列表')
+                return
+            # urllist = listSelector.attrib['href']
+            urlList = []
+            for i,item in enumerate(listSelector):
+                # item = listSelector[0]
+                url = item.attrib['href']
+                urlList.append(url)
+                yield scrapy.Request(
+                    url=url,
+                    dont_filter=True,
+                    meta={'save': True}
+                )
+        else:
+            listSelector = response.css('div.infocard__container__item__main')
+            if(listSelector == None or len(listSelector) == 0):
+                logging.error('detail_page_load_wrong, url is: ' + response.url)
+                return
+            type = listSelector[0].css('::text').get().strip()
+            serviceAreaEle = listSelector[1]
+            serviceArea = ''
+            for i, item in enumerate(serviceAreaEle.css('a::text')):
+                serviceArea = serviceArea+ item.get().strip() + ' '
+            serviceArea.strip()
+
+            nameSelector = response.css('div.infocard__container__item--contact div.infocard__container__item__main::text')
+            name = nameSelector.get().strip()
+            addressSelector = response.css('div.infocard__container__item--shopaddress div.infocard__container__item__main')
+
+            address = ''
+            for i,item in enumerate(addressSelector[0].css('a::text')):
+                address = address + item.get().strip() + ' '
+            address = address.strip()
+
+            phone = ''
+            phoneSelector = response.css('div.tel_num.clearfix span.num_cont::text')
+            if(phoneSelector != None and len(phoneSelector) > 0):
+                phone = phoneSelector.get()
+            phoneSelector = response.css('div.dialog_phone div.nowlt_tel span::text')
+            if(phoneSelector != None and len(phoneSelector) > 0):
+                phone = phoneSelector.get().split(' ')[1]
+            yield {
+                'type': type,
+                'serviceArea': serviceArea,
+                'name': name,
+                'address': address,
+                'phone': phone,
+                'sourceId': 5
+            }
+        urlTest = ""
+
